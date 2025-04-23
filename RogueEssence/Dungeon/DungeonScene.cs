@@ -473,10 +473,11 @@ namespace RogueEssence.Dungeon
                         MinimapOffset = Loc.Zero;
                     }
 
+                    // NECRO IMPROVEMENT: #87546198756 ABLE TO ACT WITH MAP ON
                     //multi-button presses
-                    if (ShowMap == MinimapState.Detail)
+                    /* if (ShowMap == MinimapState.Detail)
                         ProcessMinimapInput(input);
-                    else if (input[FrameInput.InputType.Skills])
+                    else */ if (input[FrameInput.InputType.Skills])
                     {
                         if (input[FrameInput.InputType.SkillPreview])
                         {
