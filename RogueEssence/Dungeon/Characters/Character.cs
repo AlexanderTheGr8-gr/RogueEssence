@@ -258,6 +258,10 @@ namespace RogueEssence.Dungeon
         public int Fullness;
         public int FullnessRemainder;
         public int MaxFullness;
+        
+        // NECRO IMPROVEMENT: #1508963778 AUTOREFRESH MOVES
+        public int MovesRefreshInterval = 20;
+        public int MovesRefreshRemainder;
 
         private bool dead;
         public bool Dead
@@ -422,7 +426,7 @@ namespace RogueEssence.Dungeon
 
         public Character(CharData baseChar, Loc newLoc, Dir8 charDir)
             : base(baseChar)
-        {            
+        {
             CurrentForm = BaseForm;
 
             HP = MaxHP;
@@ -567,6 +571,9 @@ namespace RogueEssence.Dungeon
 
             Fullness = MaxFullness;
             FullnessRemainder = 0;
+            
+            // NECRO IMPROVEMENT: #1508963778 AUTOREFRESH MOVES
+            MovesRefreshRemainder = 0;
 
             //record changed skills
             List<int> skillIndices = new List<int>();
@@ -613,7 +620,7 @@ namespace RogueEssence.Dungeon
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="refresh">True if you want to carry out a refresh, false otherwise</param>
         public void FullRestore(bool fullRefresh = true)
@@ -806,6 +813,9 @@ namespace RogueEssence.Dungeon
                 yield break;
             }
 
+            // NECRO IMPROVEMENT: #1508963778 AUTOREFRESH MOVES
+            MovesRefreshRemainder = -MovesRefreshInterval;
+            
             HP -= takeHP;
 
             if (hp < 0)
@@ -886,7 +896,7 @@ namespace RogueEssence.Dungeon
             SingleCharContext context = new SingleCharContext(this);
             yield return CoroutineManager.Instance.StartCoroutine(OnDeath(context));
 
-            //TODO: refactor this code into OnDeath now that it can cancel properly   
+            //TODO: refactor this code into OnDeath now that it can cancel properly
             if (Dead)
             {
                 if (MemberTeam is ExplorerTeam)
@@ -2526,6 +2536,9 @@ namespace RogueEssence.Dungeon
 
         public IEnumerator<YieldInstruction> PerformBattleAction(CombatAction action, BattleContext context)
         {
+            // NECRO IMPROVEMENT: #1508963778 AUTOREFRESH MOVES
+            MovesRefreshRemainder = -MovesRefreshInterval;
+            
             yield return new WaitUntil(DungeonScene.Instance.AnimationsOver);
             yield return new WaitWhile(OccupiedwithAction);
 
